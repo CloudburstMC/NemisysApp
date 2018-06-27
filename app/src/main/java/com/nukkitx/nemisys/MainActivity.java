@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.nukkitx.network.raknet.RakNetServer;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -26,6 +28,16 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        RakNetServer<AndroidSession> rakNetServer = RakNetServer.<AndroidSession>builder().address("0.0.0.0", 19132)
+                .listener(new AndroidEventListener())
+                .packet(AndroidPacket::new, 0xfe)
+                .maximumThreads(2)
+                .serverId(12345)
+                .sessionFactory((connection) -> new AndroidSession(connection))
+                .sessionManager(new AndroidSessionManager())
+                .build();
+        rakNetServer.getRakNetNetworkListener().bind();
     }
 
     @Override
